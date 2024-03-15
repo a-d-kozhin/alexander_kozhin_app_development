@@ -81,7 +81,7 @@ if 'current_user_name' not in st.session_state:
 if 'challenges' not in st.session_state:
     st.session_state.challenges = []
 
-if not st.session_state['logged_in']:
+if not st.session_state.get('logged_in', False):
 
     with st.form("AuthForm", clear_on_submit=False):
         username = st.text_input("Username")
@@ -92,22 +92,27 @@ if not st.session_state['logged_in']:
         with col2:
             register_submit = st.form_submit_button("Sign Up")
 
-    if login_submit:
-        user_doc = user_collection.find_one({"username": username})
-        if user_doc and password == user_doc.get('password'):
-            st.session_state['logged_in'] = True
-            st.session_state['current_user_name'] = username
-            st.rerun()  # Refresh the page to update the login state
+    if login_submit or register_submit:
+        if not username or not password:
+            st.error("Please enter both username and password.")
         else:
-            st.error("Incorrect username or password.")
+            if login_submit:
+                user_doc = user_collection.find_one({"username": username})
+                if user_doc and password == user_doc.get('password'):
+                    st.session_state['logged_in'] = True
+                    st.session_state['current_user_name'] = username
+                    st.rerun()
+                else:
+                    st.error("Incorrect username or password.")
 
-    if register_submit:
-        if user_collection.find_one({"username": username}):
-            st.error("This username already exists. Please choose another.")
-        else:
-            user_collection.insert_one({"username": username, "password": password})
-            st.session_state['logged_in'] = True
-            st.rerun()
+            if register_submit:
+                if user_collection.find_one({"username": username}):
+                    st.error("This username already exists. Please choose another.")
+                else:
+                    user_collection.insert_one({"username": username, "password": password})
+                    st.session_state['current_user_name'] = username
+                    st.session_state['logged_in'] = True
+                    st.rerun()
 
 if st.session_state.logged_in:
     st.sidebar.title("Navigation")
