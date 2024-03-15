@@ -6,8 +6,10 @@ from datetime import datetime, timedelta
 def connect_to_mongo(uri):
     return MongoClient(uri)
 
+
 def get_database(client, db_name):
     return client[db_name]
+
 
 mongo_client = connect_to_mongo(st.secrets["mongodb_uri"])
 auth_db = get_database(mongo_client, 'app_development')
@@ -22,7 +24,8 @@ background-size: cover;
 }
 </style>
 """
-st.markdown(background_image,unsafe_allow_html=True)
+st.markdown(background_image, unsafe_allow_html=True)
+
 
 def display_item(item, media_type):
     col1, col2 = st.columns([1, 2])
@@ -66,11 +69,13 @@ def add_challenge(name, type):
     st.session_state.challenges.append((name, type, today, deadline))
     st.success(f"Challenge '{name}' added!")
 
+
 def remove_challenge(name_to_remove):
     st.session_state.challenges = [
         challenge for challenge in st.session_state.challenges
         if challenge[0] != name_to_remove
     ]
+
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
@@ -122,8 +127,6 @@ if st.session_state.logged_in:
         st.title("Mind Arena")
         st.write('Challenge yourself or your friends to appreciate content that is worth your time.')
 
-
-
         st.header(f"Hello, {st.session_state['current_user_name'].capitalize()}!")
 
         st.subheader("Getting Started with Mind Arena")
@@ -141,7 +144,6 @@ if st.session_state.logged_in:
         """)
 
         st.write("Dive into the challenges and discover something new today.")
-
 
         st.subheader("Your active Challenges:")
 
@@ -164,10 +166,12 @@ if st.session_state.logged_in:
         st.markdown("Thoughtfully selected masterpieces")
         curated_book_lists = {
             "3 Hidden Gems of Russian Classics to Read This March": [
-                {"title": "Fathers and Sons", "author": "Ivan Turgenev", "year": "1862", "image_url": "https://m.media-amazon.com/images/I/41JrpnqYYtS._SL500_.jpg"},
+                {"title": "Fathers and Sons", "author": "Ivan Turgenev", "year": "1862",
+                 "image_url": "https://m.media-amazon.com/images/I/41JrpnqYYtS._SL500_.jpg"},
                 {"title": "The Death of Ivan Ilyich", "author": "Leo Tolstoy", "year": "1886",
                  "image_url": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1663546974i/18386.jpg"},
-                {"title": "Pnin", "author": "Vladimir Nabokov", "year": "1957", "image_url": "https://m.media-amazon.com/images/I/41GaSfduMiL.jpg"},
+                {"title": "Pnin", "author": "Vladimir Nabokov", "year": "1957",
+                 "image_url": "https://m.media-amazon.com/images/I/41GaSfduMiL.jpg"},
             ],
             "3 Inspiring Biographies to Read This Spring": [
                 {"title": "The Diary of a Young Girl", "author": "Anne Frank", "year": "1947",
@@ -180,7 +184,8 @@ if st.session_state.logged_in:
             "3 Exciting Pageturners for Rainy Spring Evenings": [
                 {"title": "The Night Circus", "author": "Erin Morgenstern", "year": "2011",
                  "image_url": "https://cdn.kobo.com/book-images/ebd620dd-420e-4e9f-820c-c24b91401d97/353/569/90/False/the-night-circus-2.jpg"},
-                {"title": "Rebecca", "author": "Daphne du Maurier", "year": "1938", "image_url": "https://m.media-amazon.com/images/I/91ziTMetVcL._AC_UF894,1000_QL80_.jpg"},
+                {"title": "Rebecca", "author": "Daphne du Maurier", "year": "1938",
+                 "image_url": "https://m.media-amazon.com/images/I/91ziTMetVcL._AC_UF894,1000_QL80_.jpg"},
                 {"title": "The Seven Husbands of Evelyn Hugo", "author": "Taylor Jenkins Reid", "year": "2017",
                  "image_url": "https://m.media-amazon.com/images/I/710QvWhZIwL._AC_UF894,1000_QL80_.jpg"},
             ],
@@ -192,22 +197,31 @@ if st.session_state.logged_in:
         st.title("Curated Movies for Every Taste")
         st.markdown("Thoughtfully selected masterpieces")
         curated_movie_lists = {
-    "3 Must-Watch Tarkovsky Movies for March": [
-        {"title": "Andrei Rublev", "director": "Andrei Tarkovsky", "year": "1966", "image_url": "https://m.media-amazon.com/images/M/MV5BNjM2MjMwNzUzN15BMl5BanBnXkFtZTgwMjEzMzE5MTE@._V1_.jpg"},
-        {"title": "Solaris", "director": "Andrei Tarkovsky", "year": "1972", "image_url": "https://m.media-amazon.com/images/M/MV5BZmY4Yjc0OWQtZDRhMy00ODc2LWI2NGYtMWFlODYyN2VlNDQyXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg"},
-        {"title": "Stalker", "director": "Andrei Tarkovsky", "year": "1979", "image_url": "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p17498_p_v8_ai.jpg"},
-    ],
-    "3 Classic Noir Films for a Cozy Movie Night": [
-        {"title": "Double Indemnity", "director": "Billy Wilder", "year": "1944", "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Double_Indemnity_%281944_poster%29.jpg"},
-        {"title": "The Maltese Falcon", "director": "John Huston", "year": "1941", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/The_Maltese_Falcon_%281941_film_poster%29.jpg/676px-The_Maltese_Falcon_%281941_film_poster%29.jpg"},
-        {"title": "The Third Man", "director": "Carol Reed", "year": "1949", "image_url": "https://assets.mubicdn.net/images/notebook/post_images/19045/images-w1400.jpg?1434921963"},
-    ],
-    "3 Hitchcock Masterpieces for Suspenseful Evenings": [
-        {"title": "Psycho", "director": "Alfred Hitchcock", "year": "1960", "image_url": "https://m.media-amazon.com/images/I/610L8FnFWpL._AC_UF1000,1000_QL80_.jpg"},
-        {"title": "Rear Window", "director": "Alfred Hitchcock", "year": "1954", "image_url": "https://i.pinimg.com/474x/d3/a1/78/d3a178c03640f3361493158b4dd699e7.jpg"},
-        {"title": "Vertigo", "director": "Alfred Hitchcock", "year": "1958", "image_url": "https://m.media-amazon.com/images/I/91p7axI7JUS.jpg"},
-    ],
-}
+            "3 Must-Watch Tarkovsky Movies for March": [
+                {"title": "Andrei Rublev", "director": "Andrei Tarkovsky", "year": "1966",
+                 "image_url": "https://m.media-amazon.com/images/M/MV5BNjM2MjMwNzUzN15BMl5BanBnXkFtZTgwMjEzMzE5MTE@._V1_.jpg"},
+                {"title": "Solaris", "director": "Andrei Tarkovsky", "year": "1972",
+                 "image_url": "https://m.media-amazon.com/images/M/MV5BZmY4Yjc0OWQtZDRhMy00ODc2LWI2NGYtMWFlODYyN2VlNDQyXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_FMjpg_UX1000_.jpg"},
+                {"title": "Stalker", "director": "Andrei Tarkovsky", "year": "1979",
+                 "image_url": "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p17498_p_v8_ai.jpg"},
+            ],
+            "3 Classic Noir Films for a Cozy Movie Night": [
+                {"title": "Double Indemnity", "director": "Billy Wilder", "year": "1944",
+                 "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Double_Indemnity_%281944_poster%29.jpg"},
+                {"title": "The Maltese Falcon", "director": "John Huston", "year": "1941",
+                 "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/The_Maltese_Falcon_%281941_film_poster%29.jpg/676px-The_Maltese_Falcon_%281941_film_poster%29.jpg"},
+                {"title": "The Third Man", "director": "Carol Reed", "year": "1949",
+                 "image_url": "https://assets.mubicdn.net/images/notebook/post_images/19045/images-w1400.jpg?1434921963"},
+            ],
+            "3 Hitchcock Masterpieces for Suspenseful Evenings": [
+                {"title": "Psycho", "director": "Alfred Hitchcock", "year": "1960",
+                 "image_url": "https://m.media-amazon.com/images/I/610L8FnFWpL._AC_UF1000,1000_QL80_.jpg"},
+                {"title": "Rear Window", "director": "Alfred Hitchcock", "year": "1954",
+                 "image_url": "https://i.pinimg.com/474x/d3/a1/78/d3a178c03640f3361493158b4dd699e7.jpg"},
+                {"title": "Vertigo", "director": "Alfred Hitchcock", "year": "1958",
+                 "image_url": "https://m.media-amazon.com/images/I/91p7axI7JUS.jpg"},
+            ],
+        }
 
         for category, movies in curated_movie_lists.items():
             create_carousel(category, movies, "movie")
