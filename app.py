@@ -26,7 +26,7 @@ background-size: cover;
 """
 st.markdown(background_image, unsafe_allow_html=True)
 
-
+# Function to display a card (book, or movie)
 def display_item(item, media_type):
     col1, col2 = st.columns([1, 2])
     with col1:
@@ -44,48 +44,57 @@ def display_item(item, media_type):
             st.text_area("Copy this challenge and send it to your friend:", challenge_text,
                          key=f"textarea_{media_type}_{item['title']}")
 
-
+# Function to create a carousel,
+# which contains an item (card) column, and an arrow column – for positioning purposes
 def create_carousel(category, items, media_type):
     index = st.session_state.get(f"{category}_index", 0)
     st.subheader(category)
     item_col, arrow_col = st.columns([10, 1])
     with item_col:
         display_item(items[index], media_type)
+# ! Important: only works with entities that contain only 3 items.
+# In other cases, a modification would be needed
     with arrow_col:
         if st.button("→", key=f"next_{category}"):
             next_book_index = (index + 1) % 3
             st.session_state[f"{category}_index"] = next_book_index
             st.rerun()
 
-
+# Function to add challenges
 def add_challenge(name, type):
     for challenge in st.session_state.challenges:
+        # A check to prevent challenge duplication
         if challenge[0] == name:
             st.warning(f"The challenge '{name}' already exists.")
             return
 
     today = datetime.now()
+    # Deadlines depend on the type of media: 7 for movies and 30 for books
     deadline = today + timedelta(days=7) if type == "movie" else today + timedelta(days=30)
     st.session_state.challenges.append((name, type, today, deadline))
     st.success(f"Challenge '{name}' added!")
 
-
+# Delete active challenges from the state
+# This function would need to modify the API, if the active challenges were stored dynamically
 def remove_challenge(name_to_remove):
     st.session_state.challenges = [
         challenge for challenge in st.session_state.challenges
         if challenge[0] != name_to_remove
     ]
 
-
+# Logged in state is used to show either Welcome page or the Home page
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
-
+# This state is used to greet the user with their name
 if 'current_user_name' not in st.session_state:
     st.session_state['current_user_name'] = ''
-
+# This state is used to store the selected challenges
+# It would be much better to store them in the DB
 if 'challenges' not in st.session_state:
     st.session_state.challenges = []
 
+# For users who are not logged in
+# shows the Welcome page with Login/Register buttons
 if not st.session_state.get('logged_in', False):
 
     with st.form("AuthForm", clear_on_submit=False):
@@ -104,8 +113,10 @@ if not st.session_state.get('logged_in', False):
             if login_submit:
                 user_doc = user_collection.find_one({"username": username})
                 if user_doc and password == user_doc.get('password'):
+                    # Important to update the state
                     st.session_state['logged_in'] = True
                     st.session_state['current_user_name'] = username
+                    # Something was not working properly without rerun, so I added it
                     st.rerun()
                 else:
                     st.error("Incorrect username or password.")
@@ -115,14 +126,19 @@ if not st.session_state.get('logged_in', False):
                     st.error("This username already exists. Please choose another.")
                 else:
                     user_collection.insert_one({"username": username, "password": password})
+                    # Important to update the state
                     st.session_state['current_user_name'] = username
                     st.session_state['logged_in'] = True
+                    # Something was not working properly without rerun, so I added it
                     st.rerun()
+
+# Logged in users can see the sidebar and the Homepage
 
 if st.session_state.logged_in:
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Home", "Curated Books", "Curated Movies"])
 
+# Home page is showed after logging in or registering
     if page == "Home":
         st.title("Mind Arena")
         st.write('Challenge yourself or your friends to appreciate content that is worth your time.')
@@ -130,7 +146,7 @@ if st.session_state.logged_in:
         st.header(f"Hello, {st.session_state['current_user_name'].capitalize()}!")
 
         st.subheader("Getting Started with Mind Arena")
-
+        # I think it would be better to show this on click and have initially hidden
         st.write("""
         **Step 1: Find Your Challenge** - Go to 'Curated books' or 'Curated movies' to see the brilliant literature and movies, carefully selected by the experts.
 
@@ -147,6 +163,8 @@ if st.session_state.logged_in:
 
         st.subheader("Your active Challenges:")
 
+        # Would be better to fetch the challenges from the DB,
+        # in this case they would save after logging out or refreshing the page
         for challenge in st.session_state.challenges:
             challenge_name, type, created, deadline = challenge
             days_remaining = (deadline - datetime.now()).days
@@ -160,10 +178,11 @@ if st.session_state.logged_in:
                 st.rerun()
             else:
                 challenge_line.markdown(challenge_text)
-
+    # Is shown if the Curated books tab is selected
     if page == "Curated Books":
         st.title("Books to Ignite Your Imagination")
         st.markdown("Thoughtfully selected masterpieces")
+        # Would be better to store them in the DB, and get them from there
         curated_book_lists = {
             "3 Hidden Gems of Russian Classics to Read This March": [
                 {"title": "Fathers and Sons", "author": "Ivan Turgenev", "year": "1862",
@@ -193,9 +212,11 @@ if st.session_state.logged_in:
         for category, books in curated_book_lists.items():
             create_carousel(category, books, "book")
 
+    # Is shown if the Curated Movies tab is selected
     if page == "Curated Movies":
         st.title("Curated Movies for Every Taste")
         st.markdown("Thoughtfully selected masterpieces")
+        # Would be better to store them in the DB, and get them from there
         curated_movie_lists = {
             "3 Must-Watch Tarkovsky Movies for March": [
                 {"title": "Andrei Rublev", "director": "Andrei Tarkovsky", "year": "1966",
@@ -225,7 +246,7 @@ if st.session_state.logged_in:
 
         for category, movies in curated_movie_lists.items():
             create_carousel(category, movies, "movie")
-
+    # Logging out function
     if st.sidebar.button("Logout"):
         for key in st.session_state.keys():
             del st.session_state[key]
