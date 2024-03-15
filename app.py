@@ -30,7 +30,7 @@ st.markdown(background_image, unsafe_allow_html=True)
 def display_item(item, media_type):
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.image(item['image_url'], width=300)
+        st.image(item['image_url'], width=250)
     with col2:
         st.subheader(item['title'])
         if media_type == "book":
@@ -49,7 +49,7 @@ def display_item(item, media_type):
 def create_carousel(category, items, media_type):
     index = st.session_state.get(f"{category}_index", 0)
     st.subheader(category)
-    item_col, arrow_col = st.columns([10, 1])
+    item_col, arrow_col = st.columns([15, 1])
     with item_col:
         display_item(items[index], media_type)
 # ! Important: only works with entities that contain only 3 items.
