@@ -18,6 +18,7 @@ I have built an MVP for [Mind Arena](https://mind-arena.streamlit.app/).
 ---
 **The exam project repository contains the following:**
 - The `Report` as a pdf file.
+- The `Presentation` slides.
 - The streamlit code file `app.py` that carries out all the steps to build the MVP.
 - The supporting folder `.streamlit` and a supporting file `requirements.txt`.
 - The `README` file.
